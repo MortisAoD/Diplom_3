@@ -8,7 +8,6 @@ public class Utilities {
 
     public WebDriver driver;
     private final String URL = "https://stellarburgers.nomoreparties.site";
-
     public void getStarted(String browserName) {
         switch (browserName.toLowerCase()) {
             case "chrome":
