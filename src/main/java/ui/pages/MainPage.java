@@ -54,7 +54,7 @@ public class MainPage {
         return element.getText();
     }
 
-    public String getTextNoActiveCategories(){
+    public String getActiveCategoryName(){
         new WebDriverWait(driver, 5)
                 .until(ExpectedConditions.visibilityOfElementLocated(mainPageCategoriesText));
         WebElement element = driver.findElement(mainPageCategoriesText);

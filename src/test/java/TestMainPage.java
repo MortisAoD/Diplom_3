@@ -15,6 +15,7 @@ public class TestMainPage extends Utilities {
     private final String buns;
     private final String sauce;
     private final String filling;
+    MainPage mainPage;
 
     public TestMainPage(String sauce, String filling, String buns) {
         this.buns = buns;
@@ -22,7 +23,7 @@ public class TestMainPage extends Utilities {
         this.filling = filling;
     }
 
-    @Parameters(name = "Тестовые данные: {0}")
+    @Parameters(name = "Тестовые данные: {0}, {1}, {2}")
     public static Object[][] getTestData() {
         return new Object[][]{
                 {"Соусы", "Начинки", "Булки"},
@@ -32,39 +33,37 @@ public class TestMainPage extends Utilities {
     @Before
     public void setConfig() {
         getStarted("ya");
+        mainPage = new MainPage(driver);
     }
 
     @Test
     @DisplayName("«Конструктор» - переход в раздел «Булки»")
     public void shouldConstructor() {
-        MainPage mainPage = new MainPage(driver);
         mainPage.waitLoadMainPages();
         mainPage.selectCategories(filling);
         mainPage.selectCategories(sauce);
         mainPage.selectCategories(buns);
-        Assert.assertEquals(buns, mainPage.getTextNoActiveCategories());
+        Assert.assertEquals(buns, mainPage.getActiveCategoryName());
     }
 
     @Test
     @DisplayName("«Конструктор» - переход в раздел «Соусы»")
     public void shouldConstructorSauce(){
-        MainPage mainPage = new MainPage(driver);
         mainPage.waitLoadMainPages();
         mainPage.selectCategories(filling);
         mainPage.selectCategories(buns);
         mainPage.selectCategories(sauce);
-        Assert.assertEquals(sauce, mainPage.getTextNoActiveCategories());
+        Assert.assertEquals(sauce, mainPage.getActiveCategoryName());
     }
 
     @Test
     @DisplayName("«Конструктор» - переход в раздел «Начинки»")
     public void shouldConstructorBuns(){
-        MainPage mainPage = new MainPage(driver);
         mainPage.waitLoadMainPages();
         mainPage.selectCategories(sauce);
         mainPage.selectCategories(buns);
         mainPage.selectCategories(filling);
-        Assert.assertEquals(filling, mainPage.getTextNoActiveCategories());
+        Assert.assertEquals(filling, mainPage.getActiveCategoryName());
     }
 
     @After

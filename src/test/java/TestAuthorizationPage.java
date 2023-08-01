@@ -1,5 +1,5 @@
 import api.request.Request;
-import api.functions.FunctionsUserCreate;
+import api.functions.FunctionsUserRequest;
 import api.models.response.UserResponseModel;
 
 import io.qameta.allure.junit4.DisplayName;
@@ -17,23 +17,20 @@ import ui.pages.RestorePage;
 import ui.pages.AuthorizationPage;
 import ui.pages.RegistrationPage;
 
-import static api.functions.Utilities.deserialize;
-import static api.functions.FunctionsUserDelete.getUserDelete;
+import static api.functions.Utilities.fromJsonString;
+import static api.functions.FunctionsUserRequest.getUserDelete;
 
 @RunWith(Parameterized.class)
 public class TestAuthorizationPage extends Utilities {
 
-    @Before
-    public void setConfig() {
-        getStarted("ya");
-        Request request = new Request();
-        request.apiEndPoint();
-        getCreateUser();
-    }
-
     private final String name;
     private final String email;
     private final String password;
+    private UserResponseModel response;
+    MainPage mainPage;
+    AuthorizationPage authorization;
+    RegistrationPage registration;
+    RestorePage restorePage;
 
     public TestAuthorizationPage(String name, String email, String password) {
         this.name = name;
@@ -48,72 +45,60 @@ public class TestAuthorizationPage extends Utilities {
         };
     }
 
-    private UserResponseModel response;
+    private void getCreateUser() {
+        FunctionsUserRequest userCreate = new FunctionsUserRequest();
+        response = fromJsonString(userCreate.getUserCreate(name, email, password, 200), UserResponseModel.class);
+    }
 
-    public void getCreateUser() {
-        FunctionsUserCreate userCreate = new FunctionsUserCreate();
-        response = deserialize(userCreate.getUserCreate(name, email, password, 200), UserResponseModel.class);
+    @Before
+    public void setConfig() {
+        getStarted("ya");
+        Request request = new Request();
+        request.apiEndPoint();
+        getCreateUser();
+        mainPage = new MainPage(driver);
+        authorization = new AuthorizationPage(driver);
+        registration = new RegistrationPage(driver);
+        restorePage = new RestorePage(driver);
     }
 
     @Test
     @DisplayName("Авторизация пользователя - на главной странице")
     public void shouldLoginFromMainPage() {
-        MainPage mainPage = new MainPage(driver);
         mainPage.waitLoadMainPages();
         mainPage.clickToLoginBtn();
-
-        AuthorizationPage authorization = new AuthorizationPage(driver);
         authorization.getAuthorization(email, password);
-
         Assert.assertEquals("Оформить заказ", mainPage.getTextAuthCheckoutBtn());
     }
 
     @Test
     @DisplayName("Авторизация пользователя - через «Личный кабинет»")
     public void shouldLoginFromPersonalAreaPage() {
-        MainPage mainPage = new MainPage(driver);
         mainPage.waitLoadMainPages();
         mainPage.clickToPersonalAreaBtn();
-
-        AuthorizationPage authorization = new AuthorizationPage(driver);
         authorization.getAuthorization(email, password);
-
         Assert.assertEquals("Оформить заказ", mainPage.getTextAuthCheckoutBtn());
     }
 
     @Test
     @DisplayName("Авторизация пользователя - через форму регистрации")
     public void shouldLoginFromRegistrationForm() {
-        MainPage mainPage = new MainPage(driver);
         mainPage.waitLoadMainPages();
         mainPage.clickToLoginBtn();
-
-        AuthorizationPage authorization = new AuthorizationPage(driver);
         authorization.clickToRegistrationBtn();
-
-        RegistrationPage registration = new RegistrationPage(driver);
         registration.clickToLoginBtn();
-
         authorization.getAuthorization(email, password);
-
         Assert.assertEquals("Оформить заказ", mainPage.getTextAuthCheckoutBtn());
     }
 
     @Test
     @DisplayName("Авторизация пользователя - через форму восстановления пароля.")
     public void shouldLoginFromRestoreForm() {
-        MainPage mainPage = new MainPage(driver);
         mainPage.waitLoadMainPages();
         mainPage.clickToLoginBtn();
-
-        AuthorizationPage authorization = new AuthorizationPage(driver);
         authorization.clickToRestoreBtn();
-
-        RestorePage restorePage = new RestorePage(driver);
         restorePage.clickToLoginBtn();
-
         authorization.getAuthorization(email, password);
-
         Assert.assertEquals("Оформить заказ", mainPage.getTextAuthCheckoutBtn());
     }
 

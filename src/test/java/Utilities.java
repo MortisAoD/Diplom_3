@@ -10,20 +10,25 @@ public class Utilities {
     private final String URL = "https://stellarburgers.nomoreparties.site";
 
     public void getStarted(String browserName) {
-        if(browserName.equalsIgnoreCase("chrome")) {
-            WebDriverManager.chromedriver().setup();
-            driver = new ChromeDriver();
-        } else if(browserName.equalsIgnoreCase("firefox")) {
-            WebDriverManager.firefoxdriver().setup();
-            driver = new FirefoxDriver();
-        } else if(browserName.equalsIgnoreCase("ie")) {
-            WebDriverManager.iedriver().setup();
-            driver = new InternetExplorerDriver();
-        } else if (browserName.equalsIgnoreCase("ya")) {
-            System.setProperty("webdriver.chrome.driver", "src/main/resources/yandexdriver.exe");
-            driver = new ChromeDriver();
-        } else {
-            throw new IllegalArgumentException("Invalid browser name: " + browserName);
+        switch (browserName.toLowerCase()) {
+            case "chrome":
+                WebDriverManager.chromedriver().setup();
+                driver = new ChromeDriver();
+                break;
+            case "firefox":
+                WebDriverManager.firefoxdriver().setup();
+                driver = new FirefoxDriver();
+                break;
+            case "ie":
+                WebDriverManager.iedriver().setup();
+                driver = new InternetExplorerDriver();
+                break;
+            case "ya":
+                System.setProperty("webdriver.chrome.driver", "src/main/resources/yandexdriver.exe");
+                driver = new ChromeDriver();
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid browser name: " + browserName);
         }
         driver.get(URL);
     }

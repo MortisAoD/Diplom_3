@@ -9,17 +9,15 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 public class RegistrationPage {
 
     private final WebDriver driver;
-
     public RegistrationPage(WebDriver driver) {
         this.driver = driver;
     }
-
     private final By registrationLoginBtn = By.xpath(".//a[contains(text(),'Войти')]");
     private final By registrationBtn = By.xpath(".//button[contains(text(),'Зарегистрироваться')]");
     private final By registrationTextError = By.xpath(".//p[contains(text(),'Некорректный пароль')]");
 
     private By registrationFields(Integer index) {
-        return By.xpath(String.format(".//fieldset[%s]/div/div/input", index));
+        return By.xpath(String.format(".//fieldset[%s]//input", index));
     }
 
     public String getErrorTextRegistrationForm(){

@@ -5,7 +5,6 @@ import org.openqa.selenium.WebDriver;
 
 public class RestorePage {
     private final WebDriver driver;
-
     public RestorePage(WebDriver driver) {
         this.driver = driver;
     }

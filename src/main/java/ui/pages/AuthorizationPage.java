@@ -9,11 +9,9 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 public class AuthorizationPage {
 
     private final WebDriver driver;
-
     public AuthorizationPage(WebDriver driver) {
         this.driver = driver;
     }
-
     private final By authLoginBtn = By.xpath(".//button[contains(text(),'Войти')]");
     private final By authRegistrationBtn = By.xpath(".//a[contains(text(),'Зарегистрироваться')]");
     private final By authRestorePassword = By.xpath(".//a[contains(text(),'Восстановить пароль')]");

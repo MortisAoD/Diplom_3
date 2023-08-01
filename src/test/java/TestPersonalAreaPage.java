@@ -1,5 +1,5 @@
 import api.request.Request;
-import api.functions.FunctionsUserCreate;
+import api.functions.FunctionsUserRequest;
 import api.models.response.UserResponseModel;
 
 import io.qameta.allure.junit4.DisplayName;
@@ -12,27 +12,23 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import ui.pages.MainPage;
-import ui.pages.PersonalAreaPage;
-import ui.pages.AuthorizationPage;
+import ui.pages.*;
 
-import static api.functions.Utilities.deserialize;
-import static api.functions.FunctionsUserDelete.getUserDelete;
+import static api.functions.Utilities.fromJsonString;
+import static api.functions.FunctionsUserRequest.getUserDelete;
 
 @RunWith(Parameterized.class)
 public class TestPersonalAreaPage extends Utilities {
 
-    @Before
-    public void setConfig() {
-        getStarted("ya");
-        Request request = new Request();
-        request.apiEndPoint();
-        getCreateUser();
-    }
-
     private final String name;
     private final String email;
     private final String password;
+    private UserResponseModel response;
+    MainPage mainPage;
+    AuthorizationPage authorization;
+    RegistrationPage registration;
+    RestorePage restorePage;
+    PersonalAreaPage personalArea;
 
     public TestPersonalAreaPage(String name, String email, String password) {
         this.name = name;
@@ -47,77 +43,65 @@ public class TestPersonalAreaPage extends Utilities {
         };
     }
 
-    private UserResponseModel response;
+    private void getCreateUser() {
+        FunctionsUserRequest userCreate = new FunctionsUserRequest();
+        response = fromJsonString(userCreate.getUserCreate(name, email, password, 200), UserResponseModel.class);
+    }
 
-    public void getCreateUser() {
-        FunctionsUserCreate userCreate = new FunctionsUserCreate();
-        response = deserialize(userCreate.getUserCreate(name, email, password, 200), UserResponseModel.class);
+    @Before
+    public void setConfig() {
+        getStarted("ya");
+        Request request = new Request();
+        request.apiEndPoint();
+        getCreateUser();
+        mainPage = new MainPage(driver);
+        authorization = new AuthorizationPage(driver);
+        registration = new RegistrationPage(driver);
+        restorePage = new RestorePage(driver);
+        personalArea = new PersonalAreaPage(driver);
     }
 
     @Test
     @DisplayName("Переход в личный кабинет по клику на «Личный кабинет»")
     public void shouldPersonalAreaForm() {
-        MainPage mainPage = new MainPage(driver);
         mainPage.waitLoadMainPages();
         mainPage.clickToPersonalAreaBtn();
-
-        AuthorizationPage authorization = new AuthorizationPage(driver);
         authorization.getAuthorization(email, password);
         mainPage.waitLoadMainPages();
         mainPage.clickToPersonalAreaBtn();
-
-        PersonalAreaPage personalArea = new PersonalAreaPage(driver);
         Assert.assertEquals("Профиль",  personalArea.personalAreaProfileBtn());
     }
 
     @Test
     @DisplayName("Переход из личного кабинета в конструктор")
     public void shouldPersonalAreaFromConstructor() {
-        MainPage mainPage = new MainPage(driver);
         mainPage.waitLoadMainPages();
         mainPage.clickToPersonalAreaBtn();
-
-        AuthorizationPage authorization = new AuthorizationPage(driver);
         authorization.getAuthorization(email, password);
         mainPage.clickToPersonalAreaBtn();
-
-        PersonalAreaPage personalArea = new PersonalAreaPage(driver);
         personalArea.clickToConstructorBtn();
-
         Assert.assertEquals("Соберите бургер", mainPage.getTextHeaderConstructor());
     }
 
     @Test
     @DisplayName("Переход из личного кабинет по клику на логотип")
     public void shouldPersonalAreaFormLogo() {
-        MainPage mainPage = new MainPage(driver);
         mainPage.waitLoadMainPages();
         mainPage.clickToPersonalAreaBtn();
-
-        AuthorizationPage authorization = new AuthorizationPage(driver);
         authorization.getAuthorization(email, password);
         mainPage.clickToPersonalAreaBtn();
-
-        PersonalAreaPage personalArea = new PersonalAreaPage(driver);
         personalArea.clickToLogoBtn();
-
         Assert.assertEquals("Соберите бургер", mainPage.getTextHeaderConstructor());
     }
 
     @Test
     @DisplayName("Переход в личный кабинет - по клику на кнопку Выход")
     public void shouldPersonalAreaSignOut() {
-        MainPage mainPage = new MainPage(driver);
         mainPage.waitLoadMainPages();
         mainPage.clickToPersonalAreaBtn();
-
-        AuthorizationPage authorization = new AuthorizationPage(driver);
         authorization.getAuthorization(email, password);
         mainPage.clickToPersonalAreaBtn();
-
-        PersonalAreaPage personalArea = new PersonalAreaPage(driver);
         personalArea.clickToSignOut();
-
         Assert.assertEquals("Войти", authorization.getTextAuthLoginBtn());
     }
 
